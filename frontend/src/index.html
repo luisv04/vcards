@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>JASU VCards - Tarjetas Digitales Corporativas</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Crea tu tarjeta digital profesional con código QR personalizado. Comparte tu información de contacto de manera moderna y eficiente.">
+  <meta name="keywords" content="tarjeta digital, QR, vcard, contacto, JASU, corporativo">
+  <meta name="author" content="JASU">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vcards.jasu.us/">
+  <meta property="og:title" content="JASU VCards - Tarjetas Digitales Corporativas">
+  <meta property="og:description" content="Crea tu tarjeta digital profesional con código QR personalizado">
+  <meta property="og:image" content="https://jasu.us/svg/jasu-logo.svg">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://vcards.jasu.us/">
+  <meta property="twitter:title" content="JASU VCards - Tarjetas Digitales Corporativas">
+  <meta property="twitter:description" content="Crea tu tarjeta digital profesional con código QR personalizado">
+  <meta property="twitter:image" content="https://jasu.us/svg/jasu-logo.svg">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16x16.png">
+  
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#235e39">
+  
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://jasu.us">
+  
+  <!-- CSS Reset and Theme -->
+  <style>
+    /* Loading screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #235e39, #72aa52);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+    
+    .loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loading-logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      filter: brightness(0) invert(1);
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    .loading-text {
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      margin-top: 20px;
+      opacity: 0.9;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Hide scrollbar during loading */
+    body.loading {
+      overflow: hidden;
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #111827;
+        color: #f9fafb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <img src="https://jasu.us/svg/jasu-logo.svg" alt="JASU" class="loading-logo">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Cargando JASU VCards...</p>
+  </div>
+  
+  <!-- Angular App -->
+  <app-root></app-root>
+  
+  <!-- Loading Script -->
+  <script>
+    // Add loading class to body
+    document.body.classList.add('loading');
+    
+    // Remove loading screen when app is ready
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+          loadingScreen.classList.add('fade-out');
+          document.body.classList.remove('loading');
+          setTimeout(function() {
+            loadingScreen.remove();
+          }, 500);
+        }
+      }, 1000);
+    });
+    
+    // Theme detection and application
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    }
+    
+    // Initialize theme immediately
+    initializeTheme();
+    
+    // Listen for theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      if (!localStorage.getItem('theme')) {
+        if (e.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    });
+  </script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/ngsw-worker.js').then(function(registration) {
+          console.log('ServiceWorker registration successful');
+        }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html> 

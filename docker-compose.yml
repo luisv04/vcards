@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -14,6 +14,12 @@ services:
       - "5432:5432"
     networks:
       - vcards_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   backend:
     build:
@@ -37,12 +43,14 @@ services:
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
       - ./uploads:/app/uploads
       - ./qr-codes:/app/qr-codes
     networks:
       - vcards_network
+    restart: unless-stopped
 
   frontend:
     build:
@@ -57,10 +65,11 @@ services:
       - backend
     networks:
       - vcards_network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
 
 networks:
   vcards_network:
-    driver: bridge 
+    driver: bridge
